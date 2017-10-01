@@ -90,8 +90,7 @@ $("#message-form").on('submit', function(e){
   var messageTextBox = $("#name");
   e.preventDefault();
   if(messageTextBox.val() != ''){
-    socket.emit('createMessage', {
-      from : 'Frank2',
+    socket.emit('createMessage', {      
       text : messageTextBox.val()
       }, function (){
       // res is from server callback
