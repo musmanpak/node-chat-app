@@ -23,15 +23,23 @@ io.on('connection', (socket)  =>  {
 
   console.log('New user connected')
 
-
-  socket.on('createMessage', (newMessage) =>  {
-    console.log('createMessage', newMessage);
-
-    io.emit('newMessage', {
-      from : 'some@gmai.com'
-    });
-
+  socket.emit('newMessage', {
+    from : 'Admin',
+    text : 'Welcome to chat app',
+    createdAt : new Date().getTime()
   });
+
+  // socket.broadcaste.emit from Admin text New User joined
+  socket.broadcast.emit('newMessage', {
+    from : 'Admin',
+    text : 'New User Joined',
+    createdAt : new Date().getTime()
+  });
+
+  // socket.on('createMessage', (newMessage) =>  {
+  //   console.log('createMessage', newMessage);
+  //
+  // });
 
 
 
