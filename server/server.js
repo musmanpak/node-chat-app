@@ -7,6 +7,10 @@ const socketIO = require('socket.io');
 // Constant declared for app
 const generateMessage = require('./utils/message').generateMessage;
 const generateLocationMessage = require('./utils/message').generateLocationMessage;
+const isRealString = require('./utils/validation').isRealString;
+const Users = require('./utils/users').Users;
+
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -15,6 +19,8 @@ var app = express();
 var server = http.createServer(app);
 
 var io = socketIO(server);
+
+var users = new Users();
 
 app.use(express.static(publicPath));
 
@@ -25,11 +31,26 @@ io.on('connection', (socket)  =>  {
 
   console.log('New user connected')
 
-  // welcome to chat
-  socket.emit('newMessage',generateMessage('Admin', 'Welcome to chat app'));
+  // upon joining chat room
+  socket.on('join', (params, callback) => {
+    if(!(isRealString(params.name) && isRealString(params.room))){
+      return callback('Name and Room Name are required');
+    }
 
-  // alerting other users
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
+
+    // This line will join people in the same room
+    socket.join(params.room);
+    users.removeUser(socket.id);
+    users.addUser(socket.id, params.name, params.room);
+    io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+
+    // welcome to chat
+    socket.emit('newMessage',generateMessage('Admin', 'Welcome to chat app'));
+
+    // alerting other users
+    socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.name + ' has joined '));
+
+  });
 
   // sending message
   socket.on('createMessage', (message, callback) => {
@@ -44,7 +65,13 @@ io.on('connection', (socket)  =>  {
   });
 
   socket.on('disconnect', () => {
+    var user = users.removeUser(socket.id);
+    if(user){
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+      io.to(user.room).emit('newMessage', generateMessage('Admin', user.name + ' has left'));
+    }
     console.log('user was disconnected');
+
   });
 })
 

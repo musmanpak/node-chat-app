@@ -22,6 +22,16 @@ var socket = io();
 // upon successfull connection
 socket.on('connect', function(){
 
+  var param = jQuery.deparam(window.location.search);
+
+  socket.emit('join', param, function(err){
+    if(err){
+      alert(err);
+      window.location.href = "/";
+    } else {
+      console.log('No error');
+    }
+  });
   console.log('connected to server');
 
 });
@@ -30,6 +40,20 @@ socket.on('connect', function(){
 socket.on('disconnect', function(){
   console.log('disconnected from server');
 });
+
+
+//user list update
+socket.on('updateUserList', function (users){
+
+  var ol = $("<ol></ol>");
+  users.forEach(function(user){
+    ol.append($('<li></li>').text(user));
+  });
+
+  $("#users").html(ol);
+  console.log('Users', users);
+});
+
 
 // Receiving new message
 socket.on('newMessage', function (message) {
