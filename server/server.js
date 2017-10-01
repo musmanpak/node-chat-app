@@ -31,10 +31,11 @@ io.on('connection', (socket)  =>  {
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
   // sending message
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
 
     io.emit('newMessage', generateMessage(message.from, message.text));
 
+    callback(); // can pass arguments
   });
 
   socket.on('disconnect', () => {

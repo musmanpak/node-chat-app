@@ -8,11 +8,37 @@ socket.on('connect', function(){
 
 });
 
-
+// Disconnection
 socket.on('disconnect', function(){
   console.log('disconnected from server');
 });
-  
-socket.on('newMessage', function (email) {
-  console.log('New Mesasge', email);
+
+
+// Receiving new message
+socket.on('newMessage', function (message) {
+  console.log('New Mesasge', message);
+  var li = $('<li></li>');
+  li.text(`${message.from}: ${message.text}`);
+
+  $("#messages").append(li);
+
+});
+
+
+
+
+$("#message-form").on('submit', function(e){
+
+  e.preventDefault();
+
+  socket.emit('createMessage', {
+
+    from : 'Frank2',
+    text : $("#name").val()
+
+  }, function (res){
+    // res is from server callback
+    console.log('Success!');
+  });
+
 });
