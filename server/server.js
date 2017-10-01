@@ -34,12 +34,12 @@ io.on('connection', (socket)  =>  {
   // sending message
   socket.on('createMessage', (message, callback) => {
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback();
   });
 
   //creating location
   socket.on('createLocationMessage', (coords) => {
-    io.emit('newMessage', generateMessage('Admin',`${coords.latitude}, ${coords.longitude}`));
-
+    // io.emit('newMessage', generateMessage('Admin',`${coords.latitude}, ${coords.longitude}`));
     io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
   });
 
