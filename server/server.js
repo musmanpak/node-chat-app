@@ -6,6 +6,7 @@ const socketIO = require('socket.io');
 
 // Constant declared for app
 const generateMessage = require('./utils/message').generateMessage;
+const generateLocationMessage = require('./utils/message').generateLocationMessage;
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -32,10 +33,14 @@ io.on('connection', (socket)  =>  {
 
   // sending message
   socket.on('createMessage', (message, callback) => {
-
     io.emit('newMessage', generateMessage(message.from, message.text));
+  });
 
-    callback(); // can pass arguments
+  //creating location
+  socket.on('createLocationMessage', (coords) => {
+    io.emit('newMessage', generateMessage('Admin',`${coords.latitude}, ${coords.longitude}`));
+
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
   });
 
   socket.on('disconnect', () => {
