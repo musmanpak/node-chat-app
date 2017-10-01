@@ -45,7 +45,7 @@ io.on('connection', (socket)  =>  {
     io.to(params.room).emit('updateUserList', users.getUserList(params.room));
 
     // welcome to chat
-    socket.emit('newMessage',generateMessage('Admin', 'Welcome to chat app'));
+    socket.emit('newMessage',generateMessage('Admin | Muhammad Usman', 'Welcome to chat app, for any thanks contact @ musman.pak0@gmail.com'));
 
     // alerting other users
     socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.name + ' has joined '));
